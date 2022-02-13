@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "jsx": "preserve",
+    "jsxFactory": "Luddite.factory",
+    "jsxFragmentFactory": "Luddite.Fragment",
+    "lib": ["es2019", "dom"],
+    "esModuleInterop": true,
+  }
+}
