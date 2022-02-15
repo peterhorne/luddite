@@ -16,6 +16,7 @@ export const factory = (
 }
 
 export const html = (elem: JSX.IntermediateRepresentation | string): string => {
+  if (!elem) return ''
   if (typeof elem === 'string') return elem
 
   const { type, props, children } = elem
