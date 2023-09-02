@@ -1,28 +1,11 @@
-export const Fragment = ({ children }: { children: JSX.Children }) =>
-  children || null
-
-export const factory = (
-  type: keyof JSX.IntrinsicElements | JSX.Component,
-  props: Object | null,
-  ...nestedChildren: JSX.Children[]
-): JSX.IntermediateRepresentation => {
-  const children: JSX.Children = nestedChildren.flat()
-
-  return {
-    type,
-    props: props || {},
-    children,
-  }
-}
-
 export const html = (elem: JSX.IntermediateRepresentation | string): string => {
   if (!elem) return ''
   if (typeof elem === 'string') return elem
 
-  const { type, props, children } = elem
+  const { type, props } = elem
 
   if (typeof type === 'function') {
-    const out = type({ ...props, children })
+    const out = type(props)
     if (out === null) return ''
     if (typeof out === 'string') return out
     // FIXME: types indicate this isn't needed, but it is
@@ -32,26 +15,29 @@ export const html = (elem: JSX.IntermediateRepresentation | string): string => {
 
   const attrs = props
     ? Object.entries(props)
+        .filter(([key]) => key !== 'children')
         .map(([key, value]) => `${key}="${value}"`)
         .join(' ')
     : null
 
-  const domChildren = Array.isArray(children)
-    ? children.map(html).join('')
-    : html(children)
+  const domChildren = props.children
+    ? Array.isArray(props.children)
+      ? props.children.map(html).join('')
+      : html(props.children)
+    : ''
 
   return `<${type}${attrs ? ' ' + attrs : ''}>${domChildren}</${type}>`
 }
 
 export const dom = (
-  elem: JSX.IntermediateRepresentation | string,
+  elem: JSX.IntermediateRepresentation | string
 ): Array<HTMLElement | string> => {
   if (typeof elem === 'string') return [elem]
 
-  const { type, props, children } = elem
+  const { type, props } = elem
 
   if (typeof type === 'function') {
-    const out = type({ ...props, children })
+    const out = type(props)
     if (out === null) return []
     if (typeof out === 'string') return [out]
     // FIXME: types indicate this isn't needed, but it is
@@ -67,12 +53,14 @@ export const dom = (
     ;(node as any)[key] = value
   })
 
-  const childNodes = Array.isArray(children)
-    ? children.reduce<Array<HTMLElement | string>>(
-        (acc, x) => [...acc, ...dom(x)],
-        [],
-      )
-    : dom(children)
+  const childNodes = props.children
+    ? Array.isArray(props.children)
+      ? props.children.reduce<Array<HTMLElement | string>>(
+          (acc, x) => [...acc, ...dom(x)],
+          []
+        )
+      : dom(props.children)
+    : []
 
   append(node, childNodes)
 
@@ -81,7 +69,7 @@ export const dom = (
 
 export const append = (
   node: HTMLElement,
-  children: Array<HTMLElement | string>,
+  children: Array<HTMLElement | string>
 ): void => {
   children.forEach(child => {
     if (typeof child === 'string') {

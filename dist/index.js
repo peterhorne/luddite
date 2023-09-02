@@ -1,25 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.append = exports.dom = exports.html = exports.factory = exports.Fragment = void 0;
-const Fragment = ({ children }) => children || null;
-exports.Fragment = Fragment;
-const factory = (type, props, ...nestedChildren) => {
-    const children = nestedChildren.flat();
-    return {
-        type,
-        props: props || {},
-        children,
-    };
-};
-exports.factory = factory;
+exports.append = exports.dom = exports.html = void 0;
 const html = (elem) => {
     if (!elem)
         return '';
     if (typeof elem === 'string')
         return elem;
-    const { type, props, children } = elem;
+    const { type, props } = elem;
     if (typeof type === 'function') {
-        const out = type(Object.assign(Object.assign({}, props), { children }));
+        const out = type(props);
         if (out === null)
             return '';
         if (typeof out === 'string')
@@ -31,21 +20,24 @@ const html = (elem) => {
     }
     const attrs = props
         ? Object.entries(props)
+            .filter(([key]) => key !== 'children')
             .map(([key, value]) => `${key}="${value}"`)
             .join(' ')
         : null;
-    const domChildren = Array.isArray(children)
-        ? children.map(exports.html).join('')
-        : (0, exports.html)(children);
+    const domChildren = props.children
+        ? Array.isArray(props.children)
+            ? props.children.map(exports.html).join('')
+            : (0, exports.html)(props.children)
+        : '';
     return `<${type}${attrs ? ' ' + attrs : ''}>${domChildren}</${type}>`;
 };
 exports.html = html;
 const dom = (elem) => {
     if (typeof elem === 'string')
         return [elem];
-    const { type, props, children } = elem;
+    const { type, props } = elem;
     if (typeof type === 'function') {
-        const out = type(Object.assign(Object.assign({}, props), { children }));
+        const out = type(props);
         if (out === null)
             return [];
         if (typeof out === 'string')
@@ -61,9 +53,11 @@ const dom = (elem) => {
         ;
         node[key] = value;
     });
-    const childNodes = Array.isArray(children)
-        ? children.reduce((acc, x) => [...acc, ...(0, exports.dom)(x)], [])
-        : (0, exports.dom)(children);
+    const childNodes = props.children
+        ? Array.isArray(props.children)
+            ? props.children.reduce((acc, x) => [...acc, ...(0, exports.dom)(x)], [])
+            : (0, exports.dom)(props.children)
+        : [];
     (0, exports.append)(node, childNodes);
     return [node];
 };

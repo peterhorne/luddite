@@ -1,7 +1,3 @@
-export declare const Fragment: ({ children }: {
-    children: JSX.Children;
-}) => JSX.Children | null;
-export declare const factory: (type: keyof JSX.IntrinsicElements | JSX.Component, props: Object | null, ...nestedChildren: JSX.Children[]) => JSX.IntermediateRepresentation;
 export declare const html: (elem: JSX.IntermediateRepresentation | string) => string;
 export declare const dom: (elem: JSX.IntermediateRepresentation | string) => Array<HTMLElement | string>;
 export declare const append: (node: HTMLElement, children: Array<HTMLElement | string>) => void;
@@ -13,9 +9,8 @@ declare global {
         type Component<P extends {} = {}> = (props: PropsWithChildren<P>) => Element | null;
         type Element = IntermediateRepresentation | string;
         interface IntermediateRepresentation<P = {}> {
-            type: keyof IntrinsicElements | Component;
-            props: P;
-            children: Children;
+            type: string | Component;
+            props: PropsWithChildren<P>;
         }
         type Children = Element[] | Element;
         interface ElementAttributesProperty {
