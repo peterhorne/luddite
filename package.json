@@ -8,7 +8,6 @@
     "./jsx-runtime.d.ts": "./dist/jsx-runtime/index.d.js"
   },
   "devDependencies": {
-    "typescript": "^4.5.5"
-  },
-  "dependencies": {}
+    "typescript": "^5.2.2"
+  }
 }

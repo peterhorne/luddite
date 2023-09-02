@@ -4,15 +4,14 @@ exports.Fragment = exports.jsxDev = exports.jsxs = exports.jsx = void 0;
 const jsx = (type, props, _key) => ({
     type,
     props: props || {},
-    // children: (props as any)?.children ? [(props as any).children] : null,
 });
 exports.jsx = jsx;
 exports.jsxDev = exports.jsx;
 const jsxs = (type, props, _key) => ({
     type,
     props: props || {},
-    // children: (props as any)?.children ?? null,
 });
 exports.jsxs = jsxs;
+// TODO: fix as any
 const Fragment = ({ children }) => children || null;
 exports.Fragment = Fragment;
